@@ -1,4 +1,4 @@
-use anyhow::Result;
+use anyhow::{anyhow, Result};
 use reqwest::blocking::Client;
 use serde::Deserialize;
 use std::{env, vec::Vec};
@@ -33,10 +33,10 @@ fn fetch_aqi(token: String, city: &str) -> Result<APIData> {
 
 fn main() -> Result<()> {
     let args: Vec<String> = env::args().collect();
-    let default_city = "Shanghai".to_string();
+    let city = args.get(1).ok_or_else(|| anyhow!("Please enter a city name"))?;
     let fetched = fetch_aqi(
         env::var("TOKEN")?,
-        args.get(1).unwrap_or_else(|| &default_city),
+        city,
     )?;
 
     println!(
@@ -52,6 +52,5 @@ fn main() -> Result<()> {
             _ => "严重污染",
         },
     );
-    
     Ok(())
 }
