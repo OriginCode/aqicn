@@ -26,9 +26,11 @@ fn fetch_aqi(token: String, city: &str) -> Result<APIData> {
         token,
     );
     let resp = Client::new().get(&url).send()?;
-    let data: APIData = resp.json()?;
-
-    Ok(data)
+    
+    match resp.json::<APIData>() {
+        Ok(d) => Ok(d),
+        Err(_) => Err(anyhow!("Failed to process the data"))
+    }
 }
 
 fn main() -> Result<()> {
